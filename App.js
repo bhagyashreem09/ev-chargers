@@ -1,29 +1,68 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import MapView, { Marker } from "react-native-maps";
-import { StyleSheet, View, Dimensions, Alert, Button } from "react-native";
+import { StyleSheet, View, Dimensions, Alert, Share } from "react-native";
 import * as Location from "expo-location";
+import ViewShot from "react-native-view-shot";
+import { manipulateAsync, SaveFormat } from "expo-image-manipulator";
+
+import FloatingButton from "./components/FloatingButton";
 
 export default function App() {
+  const viewShotRef = useRef();
+
   let [currentLocation, setCurrentLocation] = useState({
     latitude: 0,
     longitude: 0,
   });
-  const [errorMsg, setErrormsg] = useState();
+  const [image, setImage] = useState("");
 
-  const clickHandler = () => {
-    //function to handle click on floating Action Button
-    Alert.alert("Floating Button Clicked");
-  };
+  const targetPixelCount = 1080;
 
+  // ======================= FAB Handler ==========================
+  async function captureViewShot() {
+    console.log("Button clicked");
+
+    // ------------------- Capturing View Shot ------------------------
+    const imageURL = await viewShotRef.current.capture();
+    setImage(imageURL);
+    console.log(image);
+    // const manipImage = await manipulateAsync(
+    //   // not working
+    //   image[{ resize: { height: 70, width: 30 } }],
+    //   {
+    //     compress: 0,
+    //     format: SaveFormat.WEBP,
+    //   }
+    // );
+    // setImage(manipImage);
+    // // Share.share({ title: "Image", url: image });
+
+    // Expo does not support file URI, therefore creating a blob
+    const blob = await new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.onload = function () {
+        resolve(xhr.response);
+      };
+
+      xhr.onerror = function () {
+        reject(new TypeError("Network request failed"));
+      };
+      xhr.responseType = "blob";
+      xhr.open("GET", uri, true);
+      xhr.send(null);
+    });
+    // console.log(manipImage);
+  }
+  // console.log(image);
+
+  // ======================= Getting current loaction =================================
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
-        setErrormsg("Permission denied, cannot access current location.");
-        alert(errorMsg);
+        Alert.alert("Permission denied, cannot access current location.");
         return;
       }
-
       currentLocation = await Location.getCurrentPositionAsync({});
       setCurrentLocation({
         latitude: currentLocation.coords.latitude,
@@ -36,24 +75,34 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <MapView
-        style={styles.map}
-        showsUserLocation
-        region={{
-          latitude: currentLocation.latitude,
-          longitude: currentLocation.longitude,
-          latitudeDelta: 0.015,
-          longitudeDelta: 0.0121,
-        }}
+      <ViewShot
+        ref={viewShotRef}
+        options={{ format: "jpg", quality: 0 }}
+        style={styles.viewshotContainer}
       >
-        <Marker
-          coordinate={{
+        <MapView
+          style={styles.map}
+          showsUserLocation
+          region={{
             latitude: currentLocation.latitude,
             longitude: currentLocation.longitude,
+            latitudeDelta: 0.015,
+            longitudeDelta: 0.0121,
           }}
-          image={require("./assets/current_location.png")}
-        />
-      </MapView>
+        >
+          <Marker
+            coordinate={{
+              latitude: currentLocation.latitude,
+              longitude: currentLocation.longitude,
+            }}
+            image={require("./assets/current_location.png")}
+          />
+        </MapView>
+      </ViewShot>
+
+      <View style={styles.floatingButtonStyle}>
+        <FloatingButton onPress={captureViewShot} title="Capture" />
+      </View>
     </View>
   );
 }
@@ -69,19 +118,10 @@ const styles = StyleSheet.create({
     width: Dimensions.get("window").width,
     height: Dimensions.get("window").height,
   },
-  touchableOpacityStyle: {
-    position: "absolute",
-    width: 50,
-    height: 50,
-    alignItems: "center",
-    justifyContent: "center",
-    right: 30,
-    bottom: 30,
-  },
+  viewshotContainer: { flex: 1 },
   floatingButtonStyle: {
-    resizeMode: "contain",
-    width: 50,
-    height: 50,
-    //backgroundColor:'black'
+    position: "absolute",
+    top: "10%",
+    right: 20,
   },
 });
