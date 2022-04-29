@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useRef } from "react";
 import MapView, { Marker } from "react-native-maps";
-import { StyleSheet, View, Dimensions, Alert, Share } from "react-native";
+import { StyleSheet, View, Dimensions, Alert, PixelRatio } from "react-native";
 import * as Location from "expo-location";
 import ViewShot from "react-native-view-shot";
 import { manipulateAsync, SaveFormat } from "expo-image-manipulator";
+import * as FileSystem from "expo-file-system";
 
 import FloatingButton from "./components/FloatingButton";
 
@@ -14,46 +15,11 @@ export default function App() {
     latitude: 0,
     longitude: 0,
   });
-  const [image, setImage] = useState("");
+  const [image, setImage] = useState();
 
   const targetPixelCount = 1080;
-
-  // ======================= FAB Handler ==========================
-  async function captureViewShot() {
-    console.log("Button clicked");
-
-    // ------------------- Capturing View Shot ------------------------
-    const imageURL = await viewShotRef.current.capture();
-    setImage(imageURL);
-    console.log(image);
-    // const manipImage = await manipulateAsync(
-    //   // not working
-    //   image[{ resize: { height: 70, width: 30 } }],
-    //   {
-    //     compress: 0,
-    //     format: SaveFormat.WEBP,
-    //   }
-    // );
-    // setImage(manipImage);
-    // // Share.share({ title: "Image", url: image });
-
-    // Expo does not support file URI, therefore creating a blob
-    const blob = await new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      xhr.onload = function () {
-        resolve(xhr.response);
-      };
-
-      xhr.onerror = function () {
-        reject(new TypeError("Network request failed"));
-      };
-      xhr.responseType = "blob";
-      xhr.open("GET", uri, true);
-      xhr.send(null);
-    });
-    // console.log(manipImage);
-  }
-  // console.log(image);
+  const pixelRatio = PixelRatio.get(); // The pixel ratio of the device
+  const pixels = targetPixelCount / pixelRatio;
 
   // ======================= Getting current loaction =================================
   useEffect(() => {
@@ -73,11 +39,75 @@ export default function App() {
 
   console.log(currentLocation.latitude, currentLocation.longitude);
 
+  // =============================== FAB Handler ==================================
+  async function captureViewShot() {
+    console.log("Button clicked");
+
+    // Capturing View Shot
+    const imageViewshot = await viewShotRef.current.capture();
+
+    // Getting viewshot as object
+    let imageObject = await FileSystem.getInfoAsync(imageViewshot);
+    console.log(
+      "----------------- Viewshot Image ---------------",
+      imageObject
+    );
+
+    // Manipulating file to compress  + return as WEBP?
+    const manipImage = await manipulateAsync(
+      imageObject.localUri || imageObject.uri,
+      [{ resize: { height: pixels, width: pixels } }],
+      {
+        compress: 0.5,
+        format: SaveFormat.WEBP, // png & jpeg works, webp does not. Defaults to jpeg.
+      }
+    );
+    // setImage(manipImage.uri);
+    console.log("----------- Manipulated Image -----------", manipImage);
+
+    // let manipUriInfo = await FileSystem.getInfoAsync(image);
+    // console.log("----------- Manipulated Image INFO -----------", manipUriInfao); // file compression working, WebP conversion not working
+    console.log("----------- Manipulated Image URI-----------", manipImage.uri);
+
+    //Uploading converted viewshot to api
+    const response = await fetch("HTTP://3.7.20.173:8503/api/upload/", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json", // headers is not required in Firebase, but it will be required in most other APIs, to describe the content type
+      },
+      body: { file: manipImage.uri },
+    });
+    const response_data = await response;
+    console.log("--------------JSON Response----------------", response_data); // handle response with catch
+    // Alert.alert("File upload successful", response_data.json.file);
+    // console.log(response_data.json.file);
+
+    // fetch("https://wireone-ev-default-rtdb.firebaseio.com/", {
+    //   method: "POST",
+    //   headers: {
+    //     Accept: "application/json",
+    //     "Content-Type": "application/json", // headers is not required in Firebase, but it will be required in most other APIs, to describe the content type
+    //   },
+    //   body: JSON.stringify({ file: manipImage.uri }),
+    // })
+    //   .then((response) => {
+    //     if (response.ok) {
+    //       console.log("Data post successful");
+    //     } //else {
+    //     //   console.log("Data post failed");
+    //     // }
+    //   })
+    //   .catch((error) => {
+    //     throw new Error(error);
+    //   });
+  }
+
   return (
     <View style={styles.container}>
       <ViewShot
         ref={viewShotRef}
-        options={{ format: "jpg", quality: 0 }}
+        options={{ format: "png", quality: 0.5 }}
         style={styles.viewshotContainer}
       >
         <MapView
@@ -115,8 +145,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   map: {
-    width: Dimensions.get("window").width,
-    height: Dimensions.get("window").height,
+    width: Dimensions.get("screen").width,
+    height: Dimensions.get("screen").height,
   },
   viewshotContainer: { flex: 1 },
   floatingButtonStyle: {
