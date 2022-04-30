@@ -1,9 +1,9 @@
 {
   "chargers": [
     {
-      "name": "Western Express Highway Charging",
+      "name": "Western Express Charging",
       "id": "a001",
-      "address": "Mahim, Mumbai",
+      "address": "Shivaji Park, Mumbai",
       "distance": "1902",
       "distance_metrics": "metres",
       "latitude": "19.03992403258657",
@@ -13,7 +13,7 @@
     {
       "name": "Expressway Charging",
       "id": "a002",
-      "address": "Bangalore Place, Banglore",
+      "address": "Bangalore Palace, Banglore",
       "distance": "2007",
       "distance_metrics": "metres",
       "latitude": "12.916246325260712",
