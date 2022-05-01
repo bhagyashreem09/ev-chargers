@@ -11,7 +11,7 @@ To run ev-chargers app on your device, download Expo from Android Playstore or A
 - App Store : https://apps.apple.com/us/app/expo-go/id982107779
 
 
-Or simply visit the following link, scan QR code, or open the link in your device given on this page : 
+Or simply visit the following link, scan QR code, or open the link given on this page in your device  : 
 
 - https://expo.dev/@bhagyashreem09/ev-chargers?serviceType=classic&distribution=expo-go
 
