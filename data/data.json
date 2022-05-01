@@ -1,24 +1,65 @@
 {
   "chargers": [
     {
-      "name": "Western Express Charging",
+      "name": "Tata Charging Station",
       "id": "a001",
       "address": "Shivaji Park, Mumbai",
       "distance": "1902",
       "distance_metrics": "metres",
-      "latitude": "19.03992403258657",
-      "longitude": "72.84434540257779",
+      "latitude": "19.019271850071856",
+      "longitude": "72.83099995327449",
       "connector_types": ["lvl1dc-2", "lvl2dc-1", "normalac-1"]
+    },
+
+    {
+      "name": "Tata Power Express Charging",
+      "id": "a002",
+      "address": "Bandra Reclamation, Mumbai",
+      "distance": "2007",
+      "distance_metrics": "metres",
+      "latitude": "19.051574326003532",
+      "longitude": "72.83801786577642",
+      "connector_types": ["lvl1dc-1", "lvl2dc-2", "normalac-1"]
     },
     {
       "name": "Expressway Charging",
-      "id": "a002",
-      "address": "Bangalore Palace, Banglore",
-      "distance": "2007",
+      "id": "a003",
+      "address": "Bangalore Palace, Bangalore",
+      "distance": "3807",
       "distance_metrics": "metres",
       "latitude": "12.916246325260712",
       "longitude": "77.65014462516989",
-      "connector_types": ["lvl1dc-1", "lvl2dc-2", "normalac-1"]
+      "connector_types": ["lvl1dc-3", "lvl2dc-1", "normalac-2"]
+    },
+    {
+      "name": "Electric Vehicle Charging Station",
+      "id": "a004",
+      "address": "Palace, Bangalore",
+      "distance": "1207",
+      "distance_metrics": "metres",
+      "latitude": "12.951177268245356",
+      "longitude": "77.54030714947572",
+      "connector_types": ["lvl1dc-1", "lvl2dc-3", "normalac-2"]
+    },
+    {
+      "name": "Porsche Destination Charging Station",
+      "id": "a005",
+      "address": "Palace Road, Bangalore",
+      "distance": "2307",
+      "distance_metrics": "metres",
+      "latitude": "12.974346808976248",
+      "longitude": "77.59622227658788",
+      "connector_types": ["lvl1dc-4", "lvl2dc-1", "normalac-3"]
+    },
+    {
+      "name": "EV Charging Station",
+      "id": "a006",
+      "address": "Shivaji Park, Mumbai",
+      "distance": "1902",
+      "distance_metrics": "metres",
+      "latitude": "19.03654819735161",
+      "longitude": "72.84970744441615",
+      "connector_types": ["lvl1dc-1", "lvl2dc-1", "normalac-3"]
     }
   ]
 }
