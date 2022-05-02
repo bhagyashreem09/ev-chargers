@@ -18,7 +18,7 @@ Or simply visit the following link, scan QR code, or open the link given on this
 
 Apk download link : 
 
--https://drive.google.com/drive/u/0/folders/18VI6WozAunmNXQRjfDwSHP-ECENWtxWD
+- https://drive.google.com/drive/u/0/folders/18VI6WozAunmNXQRjfDwSHP-ECENWtxWD
 
 
 
